@@ -45,7 +45,24 @@ bool Trie::Insert(const std::string& key, T value) {
 
 template <typename T>
 T Trie::GetValue(const std::string& key, bool* success) {
-    return {};
+    TrieNode* current = root_.get();
+
+    for (char k : key) {
+        if (!current->HasChild(k)) {
+            *success = false; // no existe la palabra
+            return T();
+        }
+        current = current->GetChildNode(k)->get();
+    }
+
+    TrieNodeWithValue<T>* terminal_node = dynamic_cast<TrieNodeWithValue<T>*>(current);
+    if (terminal_node) {
+        *success = true;
+        return terminal_node->GetValue();
+    }
+
+    *success = false; 
+    return T(); 
 }
 
 #endif 
